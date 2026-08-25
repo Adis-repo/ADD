@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.dualgpu",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+  ],
+  "client": [
+    "minecraft.MixinGameRenderer",
+    "minecraft.MixinWorldRenderer",
+    "opengl.MixinGLX"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

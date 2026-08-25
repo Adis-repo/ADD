@@ -1,0 +1,42 @@
+accessWidener v2 named
+
+# DualGPU Renderer Access Widener
+# Provides access to Minecraft rendering internals for Vulkan translation
+
+# Render system access
+accessible class net/minecraft/client/render/WorldRenderer
+accessible class net/minecraft/client/render/GameRenderer
+accessible class net/minecraft/client/render/BufferBuilderStorage
+
+# OpenGL/GLX access for interception
+accessible field net/minecraft/client/gl/ShaderProgram PROGRAM
+
+# Texture and buffer access
+accessible class net/minecraft/client/texture/AbstractTexture
+accessible class net/minecraft/client/texture/SimpleTexture
+
+# Framebuffer access
+accessible class net/minecraft/client/gl/Framebuffer
+accessible field net/minecraft/client/gl/Framebuffer colorAttachment
+accessible field net/minecraft/client/gl/Framebuffer depthAttachment
+
+# Chunk rendering (for Sodium compatibility layer)
+accessible class net/minecraft/client/render/chunk/ChunkBuilder
+accessible class net/minecraft/client/render/chunk/ChunkRenderer
+
+# Entity rendering
+accessible class net/minecraft/client/render/entity/EntityRenderDispatcher
+
+# Block rendering
+accessible class net/minecraft/client/render/block/BlockRenderDispatcher
+
+# Item rendering
+accessible class net/minecraft/client/render/item/ItemRenderer
+
+# Shader access for Iris integration
+accessible class net/minecraft/client/gl/ShaderEffect
+accessible class net/minecraft/client/gl/ShaderPass
+
+# Memory and buffer internals
+accessible field net/minecraft/client/gl/VertexBuffer vertexFormat
+accessible field net/minecraft/client/gl/VertexBuffer drawMode
