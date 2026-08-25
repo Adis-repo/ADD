@@ -1,0 +1,128 @@
+plugins {
+    id 'fabric-loom' version '1.9-SNAPSHOT'
+    id 'maven-publish'
+    id 'cpp'
+}
+
+version = project.mod_version
+group = 'com.dualgpu'
+
+base {
+    archivesName = "${project.mod_name}-mc${project.minecraft_version}"
+}
+
+repositories {
+    mavenCentral()
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/dualgpu.accesswidener")
+    
+    runs {
+        client {
+            client()
+            setConfigName("DualGPU Client")
+            ideConfigGenerated(true)
+            runDir("run")
+            
+            vmArgs "-Ddualgpu.debug=true"
+            vmArgs "-Ddualgpu.logging=DEBUG"
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    
+    // LWJGL with Vulkan bindings
+    implementation platform("org.lwjgl:lwjgl-bom:${project.lwjgl_version}")
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-vulkan"
+    implementation "org.lwjgl:lwjgl-opengl"
+    implementation "org.lwjgl:lwjgl-stb"
+    
+    runtimeOnly "org.lwjgl:lwjgl::natives-windows"
+    runtimeOnly "org.lwjgl:lwjgl-vulkan::natives-windows"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::natives-windows"
+    runtimeOnly "org.lwjgl:lwjgl-stb::natives-windows"
+}
+
+// Native C++ compilation for Vulkan backend
+model {
+    components {
+        dualgpu_native(NativeLibrarySpec) {
+            sources {
+                cpp {
+                    source {
+                        srcDirs 'src/main/cpp'
+                        include '**/*.cpp', '**/*.cc'
+                    }
+                    exportedHeaders {
+                        srcDirs 'src/main/cpp'
+                    }
+                }
+            }
+            
+            binaries.all {
+                it.tasks.withType(CppCompile) {
+                    it.dependsOn('extractIncludeNatives')
+                }
+            }
+        }
+    }
+}
+
+tasks.register('extractIncludeNatives') {
+    doLast {
+        // Extract LWJGL natives for native compilation
+        configurations.runtimeClasspath.files.each {
+            if (it.name.contains('natives')) {
+                copy {
+                    from zipTree(it)
+                    into layout.buildDirectory.dir('natives')
+                }
+            }
+        }
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version,
+               "minecraft_version": project.minecraft_version,
+               "mod_id": project.mod_id,
+               "mod_name": project.mod_name,
+               "mod_description": project.mod_description
+    }
+}
+
+java {
+    withSourcesJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(project.java_version)
+    }
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}" }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    
+    repositories {
+        // Configure your publishing repository here
+    }
+}

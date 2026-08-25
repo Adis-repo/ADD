@@ -1,0 +1,56 @@
+```
+# Gradle
+.gradle/
+build/
+target/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Temp files
+*.tmp
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python (if any Python files exist in project)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+*.so
+.mypy_cache/
+.pytest_cache/
+.tox/
+.coverage
+coverage.xml
+nosetests.xml
+```
