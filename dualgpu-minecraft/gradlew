@@ -1,0 +1,34 @@
+#!/bin/sh
+
+##############################################################################
+# Gradle Wrapper Script for DualGPU Minecraft Renderer
+##############################################################################
+
+# Determine script directory
+APP_HOME="$( cd "$( dirname "$0" )" && pwd )"
+
+# Resolve JAVA_HOME
+if [ -n "$JAVA_HOME" ] ; then
+    JAVACMD="$JAVA_HOME/bin/java"
+else
+    JAVACMD="java"
+fi
+
+# Check Java version
+JAVA_VERSION=$("$JAVACMD" -version 2>&1 | head -1 | cut -d'"' -f2 | cut -d'.' -f1)
+if [ "$JAVA_VERSION" -lt 21 ]; then
+    echo "ERROR: Java 21 or higher is required. Found: $JAVA_VERSION"
+    exit 1
+fi
+
+# Path to wrapper jar
+WRAPPER_JAR="$APP_HOME/gradle/wrapper/gradle-wrapper.jar"
+
+# Download gradle-wrapper.jar if not present
+if [ ! -f "$WRAPPER_JAR" ]; then
+    echo "Downloading Gradle Wrapper..."
+    mkdir -p "$APP_HOME/gradle/wrapper"
+    curl -L -o "$WRAPPER_JAR" "https://raw.githubusercontent.com/gradle/gradle/master/gradle/wrapper/gradle-wrapper.jar"
+fi
+
+exec "$JAVACMD" -classpath "$WRAPPER_JAR" org.gradle.wrapper.GradleWrapperMain "$@"
